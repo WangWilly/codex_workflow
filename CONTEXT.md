@@ -213,7 +213,7 @@ The explicit installation step performed through the plugin's bundled setup skil
 _Avoid_: Automatic plugin installation
 
 **Multi-agent v2 compatibility configuration**:
-The user-owned, user-global `config.toml` section that explicitly enables multi-agent v2 and exposes the spawn metadata required for direct concrete-profile selection. New configuration uses the host's canonical `collaboration` tool namespace. Existing explicit values are preserved and verified rather than silently replaced, and plugin uninstall does not remove or revert them.
+The user-owned, user-global `config.toml` section that explicitly enables multi-agent v2 and exposes the spawn metadata required for direct concrete-profile selection. New configuration uses the plugin's `agents` tool namespace. Existing explicit values are preserved and verified rather than silently replaced, and plugin uninstall does not remove or revert them.
 _Avoid_: Agent-profile installation, project routing configuration
 
 **Fresh-task compatibility attestation**:

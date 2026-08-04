@@ -25,12 +25,12 @@ Install and upgrade also manage the minimum user-global multi-agent v2 compatibi
 [features.multi_agent_v2]
 enabled = true
 hide_spawn_agent_metadata = false
-tool_namespace = "collaboration"
+tool_namespace = "agents"
 ```
 
 If `[features.multi_agent_v2]` already exists, setup adds only missing keys and preserves existing values, including an explicit `enabled = false`. The setup result must distinguish successful file deployment from active orchestration: preserved values can leave the profiles installed while multi-agent v2 or direct profile selection remains unavailable.
 
-This configuration is based on the typed configuration and tests in the pinned Codex source revision `5af85998c24fb3353ddd8164c3ed472057b03cb3`. That revision accepts a custom namespace but defaults to `collaboration`, marks multi-agent v2 stable while leaving it disabled by default, and defaults to hiding spawn metadata. The plugin uses `collaboration` because a namespace labels the host tool surface; it is unrelated to the `~/.codex/agents/` profile directory.
+This configuration is based on the typed configuration and tests in the pinned Codex source revision `5af85998c24fb3353ddd8164c3ed472057b03cb3`. That revision accepts a custom namespace but defaults to `collaboration`, marks multi-agent v2 stable while leaving it disabled by default, and defaults to hiding spawn metadata. The plugin deliberately overrides that host default with `agents` because a namespace labels the host tool surface; it is unrelated to the `~/.codex/agents/` profile directory.
 
 Because provider-visible spawn schemas can vary by Codex build and model, a parse check is insufficient. Verification requires a newly started task that confirms multi-agent v2 starts and exposes the expected profile, model, and reasoning metadata. A reserved-schema error or missing metadata is reported as an incompatible host configuration. Setup does not silently change the namespace, re-hide the metadata, or introduce hook-based role injection.
 

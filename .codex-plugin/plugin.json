@@ -1,6 +1,6 @@
 {
   "name": "codex-workflow",
-  "version": "0.1.0",
+  "version": "0.1.0+codex.20260804151829",
   "description": "Policy-constrained, context-sensitive orchestration for Codex development work.",
   "author": {
     "name": "WangWilly",

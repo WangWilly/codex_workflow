@@ -30,7 +30,7 @@ Delegated execution requires multi-agent v2 to be active and its direct profile-
 [features.multi_agent_v2]
 enabled = true
 hide_spawn_agent_metadata = false
-tool_namespace = "collaboration"
+tool_namespace = "agents"
 ```
 
 If the section already exists, setup adds only missing keys and preserves every explicit existing value. In particular, it does not replace an explicit `enabled = false`, metadata-visibility choice, or tool namespace. Verification must report any preserved value that prevents this policy from operating.

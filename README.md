@@ -108,7 +108,7 @@ configuration:
 [features.multi_agent_v2]
 enabled = true
 hide_spawn_agent_metadata = false
-tool_namespace = "collaboration"
+tool_namespace = "agents"
 ```
 
 If the section already exists, setup preserves every explicit value and adds
@@ -226,7 +226,8 @@ revision
 [`5af85998c24fb3353ddd8164c3ed472057b03cb3`](https://github.com/openai/codex/tree/5af85998c24fb3353ddd8164c3ed472057b03cb3/codex-rs/config/src).
 That revision defaults the tool namespace to `collaboration`, keeps
 multi-agent v2 disabled unless explicitly enabled, and supports controlling
-spawn-metadata visibility.
+spawn-metadata visibility. Codex Workflow explicitly selects the `agents`
+namespace to avoid the provider-reserved `collaboration.spawn_agent` schema.
 
 Provider-visible spawn schemas can still vary by Codex build and model. If a
 fresh-task verification reports a reserved-schema or missing-metadata

@@ -84,7 +84,7 @@ After preflight and authorization:
    [features.multi_agent_v2]
    enabled = true
    hide_spawn_agent_metadata = false
-   tool_namespace = "collaboration"
+   tool_namespace = "agents"
    ```
 
    If the section exists, add only missing keys and preserve all existing
