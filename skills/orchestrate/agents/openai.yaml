@@ -1,0 +1,7 @@
+interface:
+  display_name: "Orchestrate Codex Workflow"
+  short_description: "Plan and coordinate adaptive development work"
+  default_prompt: "Use $orchestrate to plan and execute this development task."
+
+policy:
+  allow_implicit_invocation: true

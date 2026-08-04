@@ -1,119 +1,254 @@
-<h3 align="center"><big><big><strong>SIMPLE&emsp;&emsp;───&emsp;&emsp;EASY&emsp;&emsp;───&emsp;&emsp;EFFICIENT</strong></big></big></h3>
-<p align="center"><small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(to use)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(to install)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(token consumption)</small></p>
-<hr>
+# Codex Workflow
 
-A swarm orchestration system for **GPT-5.6 Luna** subagents.
+Codex Workflow is a user-global, skills-only Codex plugin for adaptive
+development orchestration. It reconstructs state from the active task and
+workspace, synthesizes a proportionate workflow, and delegates to concrete
+agent profiles under explicit concurrency, verification, fallback, and
+worktree rules.
 
-![Workflow illustration](illustration.png)
+It does not install project-specific routes, create an `agent_docs/` framework,
+or require a primary skill to define the workflow.
 
-A workflow designed to be extremely simple to use.
+## What it provides
 
-Beneath this simplicity is a tightly engineered agent orchestration system: a purpose-built documentation framework, strict responsibility boundaries, compact work-package communication, anti-stall and worker-replacement mechanisms, executor–tester repair loops, worker lifecycle management, and persistent project-state tracking. Everything is optimized to keep each agent focused on exactly what it needs & drastically reducing overall token usage.
+- Dynamic selection between direct execution, single-layer delegation, and
+  two-layer worktree orchestration.
+- A read-only Router control plane with writable leaf agents.
+- Five concrete, model-bound profiles:
 
-> For lightweight tasks, it won’t overdo things. Light route is default.
+  | Profile | Purpose | Sandbox |
+  | --- | --- | --- |
+  | `explorer` | Bounded investigation and evidence gathering | Read-only |
+  | `executor_luna` | Default implementation work | Workspace write |
+  | `executor_sol` | Difficult or cross-cutting implementation | Workspace write |
+  | `tester` | Independent verification and test work | Workspace write |
+  | `doc-writer` | Evidence-backed durable documentation | Workspace write |
 
-> **Note:** this worflow is installed per project. Install it again when starting a new project.
+- Stateless orchestration: session and workspace evidence replace
+  workflow-owned checkpoint files.
+- At most three concurrent leaf agents per Router.
+- Optional hierarchical execution with at most three concurrent Sub-routers,
+  each in a separate Codex session and managed Git worktree.
+- An explicit-only setup skill for profile installation, verification,
+  upgrades, and uninstallation.
 
+The canonical runtime rules are in
+[`EXECUTION_POLICY.md`](EXECUTION_POLICY.md). Design rationale is recorded under
+[`docs/adr/`](docs/adr/).
 
-## Installation
+## Requirements
 
-### Launch Codex from your project directory
+- A Codex surface with plugin and multi-agent v2 support.
+- A Codex build compatible with the structured
+  `[features.multi_agent_v2]` configuration used below.
+- Git worktrees when hierarchical orchestration is requested.
+- Permission to write to the user's Codex home when running setup lifecycle
+  operations.
 
-Open Codex CLI or the Codex app from your project directory and send:
+The bundled profiles use GPT-5.6 Luna and GPT-5.6 Sol model identifiers. Those
+models must be available in the user's Codex environment.
 
-```text
-Clone https://github.com/viettran-edgeAI/codex_workflow.git , then read @workflow_setup_guide.md and automatically perform the complete installation process described in it.
+## Install
+
+Plugin installation and personal-agent deployment are separate operations.
+Codex plugin packaging does not automatically copy the plugin's `agents/`
+directory into `~/.codex/agents/`.
+
+### 1. Place the plugin in a stable local path
+
+```bash
+mkdir -p ~/plugins
+git clone https://github.com/WangWilly/codex_workflow.git \
+  ~/plugins/codex-workflow
 ```
 
-Done. At this point, the basic installation process is complete. Codex will ask some additional optional advanced questions below to further optimize the current project.
+If that directory already contains a clone, update it instead:
 
-## Configuration questions
+```bash
+git -C ~/plugins/codex-workflow pull --ff-only
+```
 
-You can answer the following questions or skip them. If you skip, the default settings will be used.
+### 2. Add it to the personal marketplace
 
-### 1. Workflow style and design principles (optinal)
-
-Codex will ask about the project's workflow style and core design principles.
-You can describe requirements such as:
-
-- Prioritize modular design;
-- Keep dependencies low;
-- Do not change public APIs without prior approval;
-- ...
-
-### 2. Frontend project profile (optional)
-
-The default workflow is designed primarily for backend work (Very heavily focused on testing). If the current project is a frontend project, Codex will ask whether you want to minimize testing, modularization, or similar requirements for the project. 
-
-### 3. Power configuration
-
-The default workflow is designed to save tokens for the ChatGPT Plus plan. Codex will ask if you want to enable each advanced option individually.
-
-- Allow more subagents (currently a maximum of 5) and allow more than one `executor_sol` call.
-- Set `executor_luna` and `tester` to the `max` model_reasoning_effort. Currently `xhigh`. 
-- Allow subagents to send more detailed report packets to the main agent (event and final report are currently limited to 150 & 250 words).
-- Allow subagents to retry more times when stuck/blocked before replacing them (currently 2). The new subagent will have to reload the context packet, but this will reduce the risk of getting stuck; consider this.
-
-### Restart codex after installation
-
-### What is a workflow route?
-
-This workflow has 3 routes:
-
-- Light route: For light and medium tasks. Minimal context, no subagents, no workflow.
-- Heavy route: For the deployment of heavy plans and tasks. The main agent will coordinate the workers. Sol medium -> Sol xhigh is recommended.
-- Medium route: Coordinating multiple sub-agents for a medium-sized task can sometimes cost more tokens and be slower than letting the main agent perform the work independently. Sol medium is recommended.
-
-> Since Luna is very cheap now, the medium route is not strongly recommended.
-
-## HOW TO USE
-
-- Normally, for simple work or general Q&A, you don't need to do anything. `light route` is the default route.
-- When starting or continuing a plan in progress, just tell Codex in the prompt: "
+Use Codex's built-in `$plugin-creator` once:
 
 ```text
-use medium route / use heavy route. [your task description]".
+Use $plugin-creator to add the existing plugin at
+~/plugins/codex-workflow to my default personal marketplace.
+Preserve the plugin source and do not scaffold or overwrite it.
 ```
-> Codex will not automatically switch to other routes and will be maintained throughout the work session unless you actively change the route, so u dont need to repeat the route selection in every prompt and have full route control proactively.
 
-- When you want to end current session, clean up and update documents, commit, etc., tell Codex: 
+This creates or updates the default personal marketplace entry. The entry must
+be named `codex-workflow` and point to `./plugins/codex-workflow`.
+
+### 3. Install the plugin
+
+```bash
+codex plugin add codex-workflow@personal
+```
+
+The plugin can also be installed from the **Personal** source in the Codex
+plugin browser. Start a new Codex task after installation so its bundled skills
+are discovered.
+
+### 4. Deploy the user-global agent profiles
+
+Explicitly invoke:
 
 ```text
-end this session. [tell Codex more details if necessary]".
+Use $codex-workflow:setup in install mode.
 ```
-`End-of-Session` handoff will be performed. This process updates the main document framework so that subsequent sessions can seamlessly continue the ongoing work.
-> You can still continue the session after that message if needed. 
 
-## Tips for further use and customization
+The setup skill requests authorization before writing outside the workspace. It
+copies managed profile files into `~/.codex/agents/` (or
+`$CODEX_HOME/agents/`) and adds missing keys to the user-global Codex
+configuration:
 
-* For very large codebases, you can ask Codex to modify the workflow to use a dedicated codebase management/navigation tool such as `Graphify` instead of relying on `project_progress.md`.
+```toml
+[features.multi_agent_v2]
+enabled = true
+hide_spawn_agent_metadata = false
+tool_namespace = "collaboration"
+```
 
-* If the Luna Max subagents feel too slow, you can enable `fast_mode` for them by adding:
+If the section already exists, setup preserves every explicit value and adds
+only missing keys. It aborts before writing when a destination filename or
+agent identity conflicts with an unmanaged or user-modified profile.
 
-  `service_tier = "fast"`
+#### Manual profile fallback
 
-  to files such as `executor_luna.toml`, `tester.toml`, etc. 
-  
-> At the moment, the speed/usage multipliers on subscription plans are still x1.5/x2.5 rather than the x2.5/x2 in the API.
+If the setup skill cannot be invoked, copy only missing files from the plugin's
+`agents/` directory into `~/.codex/agents/`, then add the configuration block
+above by hand. Never overwrite an existing filename or duplicate an existing
+profile `name`.
 
-* Add custom subagents such as an `investigator` for researching solutions on the web, especially if your project is niche or highly specialized. Ask Codex to structure it consistently with the other subagents in this workflow and integrate it into `heavy_route`.
+Manual copies do not contain the setup skill's management header. They are
+therefore unmanaged: later `upgrade` and `uninstall` operations will preserve
+them, and the user must maintain or remove them manually.
 
-* Customize the `End-of-Session handoff` to suit your needs in `agent_docs/workflow/heavy_route.md` and `agent_docs/workflow/medium_route.md`.
+### 5. Restart and verify
 
-.... 
+Restart Codex or open a new task, then invoke:
 
---------------------------------------
+```text
+Use $codex-workflow:setup in verify mode.
+```
 
-## BONUS - How this worflow works: a simple overview
+Verification checks profile identity and checksums, effective configuration,
+direct profile selection, model and reasoning metadata, and reserved-schema
+compatibility. The installer does not display or persist a separate activation
+status marker.
 
-> These things are about heavy route.
+## Use
 
-- Sol handles context, planning, task splitting, and supervision, while Luna subagents do the implementation. Each task is packaged into a small, self-contained work package with clear scope, context, and expected output, so each subagent only gets what it needs.
+For normal development work, describe the outcome directly. The
+`orchestrate` skill may activate when delegation or structured verification is
+useful, but it can choose direct execution when delegation would add needless
+cost.
 
-- Sol still reads the main documentations and the important parts of the codebase — that’s the manager’s job. An explorer subagent helps reduce that load by looking into tools, dependencies, external libraries, etc. The goal is to minimize Sol’s token usage and keep it focused on the important stuff.
+Invoke it explicitly when desired:
 
-- For really hard tasks, executor_luna can get stuck. In that case, Sol can spawn an executor_sol as a fallback, or use it from the start. Right now, this worflow limits this to max 1 executor_sol.
+```text
+Use $codex-workflow:orchestrate to implement and verify this feature.
+```
 
-- For handoff between sessions, project_progress.md and latest_session_work.md are managed by Sol as part of the main documentation structure. They’re there to keep long implementation plans moving smoothly across multiple sessions.
+For multiple independently deliverable feature- or pull-request-sized tracks:
 
-- ... etc.
+```text
+Use $codex-workflow:orchestrate. Plan these features as isolated parallel
+tracks and use hierarchical worktree orchestration only if the policy permits.
+```
+
+The Router synthesizes the workflow from the current task and workspace. There
+are no light, medium, or heavy route presets.
+
+## Project-local limits
+
+A repository can narrow the user-global ceilings without installing another
+copy of the plugin. Add this optional section to the repository-root
+`AGENTS.md`:
+
+````markdown
+## Orchestration policy override
+
+```yaml
+allow_hierarchical_router: false
+max_concurrent_subrouters: 2
+max_leaf_agents_per_router: 2
+```
+````
+
+Only those three keys are accepted. Project values may disable or lower global
+capabilities but cannot broaden them.
+
+## Upgrade
+
+Update the stable source clone and reinstall the marketplace plugin:
+
+```bash
+git -C ~/plugins/codex-workflow pull --ff-only
+codex plugin add codex-workflow@personal
+```
+
+Start a new task, then invoke:
+
+```text
+Use $codex-workflow:setup in upgrade mode.
+```
+
+Open another new task and run `verify` after the upgrade.
+
+## Uninstall
+
+Run profile cleanup while the setup skill is still available:
+
+```text
+Use $codex-workflow:setup in uninstall mode.
+```
+
+Then remove the plugin:
+
+```bash
+codex plugin remove codex-workflow@personal
+```
+
+Setup removes only unchanged profiles carrying a valid Codex Workflow
+management header. It preserves user-modified or unmanaged profiles.
+
+The shared `[features.multi_agent_v2]` configuration remains after uninstall
+because it is user-owned and may be used by other plugins. Disable or edit it
+separately if it is no longer wanted.
+
+## Compatibility note
+
+The structured configuration above is present in the pinned Codex source
+revision
+[`5af85998c24fb3353ddd8164c3ed472057b03cb3`](https://github.com/openai/codex/tree/5af85998c24fb3353ddd8164c3ed472057b03cb3/codex-rs/config/src).
+That revision defaults the tool namespace to `collaboration`, keeps
+multi-agent v2 disabled unless explicitly enabled, and supports controlling
+spawn-metadata visibility.
+
+Provider-visible spawn schemas can still vary by Codex build and model. If a
+fresh-task verification reports a reserved-schema or missing-metadata
+incompatibility, setup stops and reports it. This plugin does not silently
+install a hook-based routing workaround.
+
+## Development validation
+
+From the plugin root:
+
+```bash
+uv run --with pyyaml python \
+  ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
+  skills/orchestrate
+
+uv run --with pyyaml python \
+  ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py \
+  skills/setup
+
+uv run --with pyyaml python \
+  ~/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py .
+```
+
+These commands validate the two skill packages and the plugin manifest. Profile
+TOML files should also be parsed before release.

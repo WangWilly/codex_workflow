@@ -1,0 +1,35 @@
+{
+  "name": "codex-workflow",
+  "version": "0.1.0",
+  "description": "Policy-constrained, context-sensitive orchestration for Codex development work.",
+  "author": {
+    "name": "WangWilly",
+    "url": "https://github.com/WangWilly"
+  },
+  "homepage": "https://github.com/WangWilly/codex_workflow",
+  "repository": "https://github.com/WangWilly/codex_workflow",
+  "keywords": [
+    "codex",
+    "orchestration",
+    "subagents",
+    "workflow"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Codex Workflow",
+    "shortDescription": "Adaptive, policy-constrained agent orchestration.",
+    "longDescription": "Synthesizes development workflows from the active task and workspace, then coordinates concrete Codex agent profiles within explicit delegation, concurrency, verification, and worktree limits.",
+    "developerName": "WangWilly",
+    "category": "Productivity",
+    "capabilities": [
+      "Dynamic orchestration",
+      "Multi-agent delegation",
+      "Worktree isolation"
+    ],
+    "defaultPrompt": [
+      "Plan and execute this development task.",
+      "Coordinate independent implementation and verification.",
+      "Split these features into isolated parallel tracks."
+    ]
+  }
+}

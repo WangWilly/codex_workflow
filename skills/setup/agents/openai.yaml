@@ -1,0 +1,7 @@
+interface:
+  display_name: "Set Up Codex Workflow"
+  short_description: "Install and verify global agent profiles"
+  default_prompt: "Use $setup to install or verify Codex Workflow."
+
+policy:
+  allow_implicit_invocation: false
