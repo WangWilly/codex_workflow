@@ -106,7 +106,6 @@ configuration:
 
 ```toml
 [features.multi_agent_v2]
-enabled = true
 hide_spawn_agent_metadata = false
 tool_namespace = "agents"
 ```

@@ -82,13 +82,12 @@ After preflight and authorization:
 
    ```toml
    [features.multi_agent_v2]
-   enabled = true
    hide_spawn_agent_metadata = false
    tool_namespace = "agents"
    ```
 
    If the section exists, add only missing keys and preserve all existing
-   values, including an explicit `enabled = false`.
+   values.
 4. Validate staged profiles and the complete resulting configuration.
 5. Keep temporary rollback copies of destinations changed by this operation,
    then replace files atomically where the host supports it.
@@ -106,8 +105,8 @@ Perform no writes. Verify:
 1. Every source profile has one installed counterpart with a valid management
    header, matching source identity, plugin version, and payload checksum.
 2. No duplicate installed profile identity shadows a managed profile.
-3. The effective multi-agent v2 configuration is enabled, exposes spawn
-   metadata, and uses the expected active namespace.
+3. The effective multi-agent v2 configuration exposes spawn
+   metadata and uses the expected active namespace.
 4. The current host exposes direct concrete-profile selection plus the expected
    model and reasoning metadata.
 5. No reserved-schema or profile-resolution incompatibility is observable.

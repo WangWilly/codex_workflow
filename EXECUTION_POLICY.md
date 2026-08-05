@@ -28,12 +28,11 @@ Delegated execution requires multi-agent v2 to be active and its direct profile-
 
 ```toml
 [features.multi_agent_v2]
-enabled = true
 hide_spawn_agent_metadata = false
 tool_namespace = "agents"
 ```
 
-If the section already exists, setup adds only missing keys and preserves every explicit existing value. In particular, it does not replace an explicit `enabled = false`, metadata-visibility choice, or tool namespace. Verification must report any preserved value that prevents this policy from operating.
+If the section already exists, setup adds only missing keys and preserves every explicit existing value. In particular, it does not replace metadata-visibility choice, or tool namespace. Verification must report any preserved value that prevents this policy from operating.
 
 These fields are host-version-sensitive even when accepted by the local configuration schema. After configuration or profile changes, setup requires a fresh Codex task to attest that multi-agent v2 starts and that the spawn interface exposes the expected concrete profile, model, and reasoning settings. A reserved-schema error or missing profile-selection metadata is an incompatibility. Setup must stop and report it; it must not silently install a hook-based routing workaround or switch namespaces.
 
