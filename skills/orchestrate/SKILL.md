@@ -27,6 +27,8 @@ runtime policy.
 
 - Resolve each capability role to one installed concrete agent profile:
   `explorer`, `executor_luna`, `executor_sol`, `tester`, or `doc-writer`.
+- For writable implementation packages, apply the execution policy's
+  Luna-first escalation rule; do not select Sol from estimated difficulty.
 - Use the active host's exposed multi-agent tool namespace and schema. Do not
   infer a tool name from the profile directory or rewrite tool calls through a
   hook.

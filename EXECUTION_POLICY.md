@@ -119,6 +119,35 @@ A capability role expresses an abstract need such as investigation, implementati
 
 An agent profile contains only its stable role, model, reasoning effort, sandbox mode, and developer instructions.
 
+Every writable implementation work package is assigned to `executor_luna` first,
+including work that the Router expects to be difficult or cross-cutting.
+`executor_sol` is not eligible for an initial implementation assignment based on
+estimated difficulty, breadth, or architectural risk.
+
+Luna remains responsible for ordinary locally repairable defects, including
+failed tests that its work package can correct. The Router may escalate the
+package to `executor_sol` only when Luna supplies observable evidence of either:
+
+- a `blocker` that prevents completion; or
+- a `defect` or `final` event showing that the package fails its acceptance
+  evidence after Luna has completed its locally repairable work.
+
+Before that escalation, the Router establishes an ownership barrier and passes
+Sol the base revision, diff, worktree status, and Luna's relevant evidence.
+Sol may correct or replace the work, but the handoff must not silently discard
+Luna's results.
+
+The escalation applies only to the failed package and to later packages that
+are demonstrably dependent on the same unresolved cause. For a later package,
+the evidence must identify the affected interface or invariant and the
+execution plan must show that the package depends on it. Independent packages
+remain assigned to Luna first; similarity of difficulty or feature area is not
+enough to select Sol.
+
+Luna being unavailable because of host, profile, capacity, or sandbox
+constraints is not failure evidence. In that case, stop and ask the user for an
+explicit exception before assigning Sol.
+
 If no compatible or higher-capability profile can safely take over a work package, stop and ask the user. The Router must not silently become the fallback worker.
 
 ## Leaf task capsule

@@ -104,6 +104,26 @@ _Avoid_: Ownership, sandbox mode
 Execution-policy instructions for recognizing ineffective subagent work, replanning, selecting a higher-capability profile, and stopping for user input when no safe takeover profile exists.
 _Avoid_: Profile fallback chain, automatic main-agent takeover
 
+**Luna-first escalation**:
+The implementation-profile selection rule that assigns every writable work package to `executor_luna` first. `executor_sol` becomes eligible only after Luna supplies observable blocker evidence, or final evidence that the package fails its acceptance standard; ordinary locally repairable defects remain with Luna.
+_Avoid_: Difficulty-based Sol selection, proactive Sol assignment
+
+**Escalation scope**:
+The bounded set of work packages reassigned under Luna-first escalation: the failed package and only later packages demonstrably dependent on the same unresolved technical cause. Independent packages remain Luna-first.
+_Avoid_: Plan-wide Sol switch, permanent agent preference
+
+**Escalation handoff**:
+The verified transfer of an escalated work package from Luna to Sol. It preserves the base revision, diff, worktree status, and Luna's evidence so Sol can correct or replace the work without silently discarding prior results.
+_Avoid_: Clean restart, undocumented takeover
+
+**Dependent escalation**:
+The reassignment of a later work package to Sol only when Luna's recorded unresolved cause names an affected interface or invariant and the execution plan proves that the later package depends on it.
+_Avoid_: Similarity-based escalation, difficulty inference
+
+**Luna availability exception**:
+The condition in which `executor_luna` cannot safely accept a writable implementation package because of host, profile, capacity, or sandbox constraints. It is not evidence of Luna's inability to complete the package and therefore requires explicit user authorization before Sol may be selected.
+_Avoid_: Automatic Sol fallback, implicit policy exception
+
 **Hard ceiling**:
 A user-global maximum for concurrency, evidence-free retries, replacements, or another resource dimension. The Router may stop earlier based on evidence but cannot exceed the ceiling.
 _Avoid_: Target, fixed workflow step
